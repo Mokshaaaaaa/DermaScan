@@ -14,9 +14,7 @@ env/
 .venv/
 
 # Trained models (large files — use Git LFS or store separately)
-Backend/models/*.h5
-Backend/models/*.keras
-Backend/models/*.pb
+
 
 # Dataset images (never commit — download from Kaggle)
 Backend/dataset/train/*/
