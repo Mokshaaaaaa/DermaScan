@@ -56,7 +56,7 @@ CLASS_NAMES = [
 
 # ─── FLASK SETUP ────────────────────────────────────────
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins="*")
 app.config['UPLOAD_FOLDER']      = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
