@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://dermascan-production.up.railway.app/api';
 
 /* ── CANVAS PARTICLE BG ── */
 (function initCanvas() {
@@ -116,7 +116,7 @@ window.addEventListener('load', () => {
   try {
     const fd = new FormData();
     fd.append('file', selectedFile);
-    const res = await fetch('http://localhost:5000/api/predict', {
+    const res = await fetch('https://dermascan-production.up.railway.app/api/predict', {
       method: 'POST',
       body: fd
     });
