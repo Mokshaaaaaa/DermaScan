@@ -1,4 +1,4 @@
-const API_URL = 'https://dermascan-production.up.railway.app/api';
+const API_URL = '/api';
 
 /* ── CANVAS PARTICLE BG ── */
 (function initCanvas() {
