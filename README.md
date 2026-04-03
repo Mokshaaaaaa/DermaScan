@@ -3,7 +3,7 @@
 A web-based application that uses a Convolutional Neural Network (CNN) trained on the
 HAM10000 dataset to classify skin lesions into 7 categories.
 
-Built by **Ubika Chaudhary**, **Moksha**, and **Muskan Mehra** @ MMDU, Ambala.
+Built by **Ubika Chaudhary** and **Moksha** @ MMDU, Ambala.
 
 ---
 
