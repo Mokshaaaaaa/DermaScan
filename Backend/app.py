@@ -23,7 +23,6 @@ ALLOWED_EXT    = {'png', 'jpg', 'jpeg'}
 # ─── EMAIL CONFIG ──────────────────────────────────────
 RECIPIENT_EMAILS = [
     'immoksha7@gmail.com',
-    'yubikachaudhary@gmail.com',
 ]
 
 MODEL_PATHS = [
