@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000";
+const API_URL = "https://dermascan-production.up.railway.app";
 
 /* ── CANVAS PARTICLE BG ── */
 (function initCanvas() {
@@ -111,23 +111,35 @@ window.addEventListener('load', () => {
   uploadZone.addEventListener('drop', e => { e.preventDefault(); handleFile(e.dataTransfer.files[0]); });
 
   analyzeBtn.onclick = async function() {
-  if (!selectedFile) return;
-  showZone(loadingZone);
-  try {
-    const fd = new FormData();
-    fd.append('file', selectedFile);
-    const res = await fetch('https://dermascan-production.up.railway.app/api/predict', {
-      method: 'POST',
-      body: fd
-    });
-    const data = await res.json();
-    if (data.success) displayResults(data);
-    else showZone(previewZone);
-  } catch(e) {
-    console.error(e);
-    showZone(previewZone);
-  }
-};
+    if (!selectedFile) return;
+    showZone(loadingZone);
+
+    // Cycle through loading messages
+    let msgIndex = 0;
+    if (loadingText) loadingText.textContent = loadingMessages[0];
+    const msgInterval = setInterval(() => {
+      msgIndex = (msgIndex + 1) % loadingMessages.length;
+      if (loadingText) loadingText.textContent = loadingMessages[msgIndex];
+    }, 1500);
+
+    try {
+      const fd = new FormData();
+      fd.append('file', selectedFile);
+      const res = await fetch(`${API_URL}/api/predict`, {
+        method: 'POST',
+        body: fd
+      });
+      const data = await res.json();
+      clearInterval(msgInterval);
+      if (data.success) displayResults(data);
+      else { showToast(data.error || 'Prediction failed.', 'error'); showZone(previewZone); }
+    } catch(e) {
+      clearInterval(msgInterval);
+      console.error(e);
+      showToast('Could not reach the server. Please try again.', 'error');
+      showZone(previewZone);
+    }
+  };
 
   const severityColors = {
     Melanoma:             { color:'#DC2626', icon:'fas fa-radiation', level:'CRITICAL' },
@@ -149,6 +161,7 @@ window.addEventListener('load', () => {
         <div>
           <div class="result-condition">${data.prediction.replace(/_/g,' ')}</div>
           <div class="result-confidence">Confidence: <strong>${data.confidence}</strong> · Severity: ${meta.level}</div>
+          ${data.test_mode ? '<div style="color:#F59E0B;font-size:0.78rem;margin-top:4px"><i class="fas fa-flask"></i> Demo mode — train the model for real predictions</div>' : ''}
         </div>
       </div>
       <div class="result-block"><h4><i class="fas fa-file-medical"></i> Description</h4><p>${rec.description||'—'}</p></div>
@@ -178,7 +191,7 @@ window.addEventListener('load', () => {
       submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending…';
       submitBtn.disabled = true;
       try {
-        const res = await fetch(`${API_URL}/contact`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name,email,phone,message}) });
+        const res = await fetch(`${API_URL}/api/contact`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name,email,phone,message}) });
         const data = await res.json();
         if (res.ok && data.success) { showToast(`Thanks, ${name}! Message sent! 📧`,'success'); contactForm.reset(); }
         else throw new Error(data.error||'Something went wrong.');
@@ -192,9 +205,13 @@ window.addEventListener('load', () => {
   }
 
   /* ── BACKEND HEALTH CHECK ── */
-  fetch(API_URL.replace('/api','') + '/')
+  fetch(`${API_URL}/api/health`)
     .then(r => r.json())
-    .then(d => { console.log('✅ Backend connected:', d.message); if (d.tensorflow_available) console.log('✅ TensorFlow model loaded!'); })
+    .then(d => {
+      console.log('✅ Backend connected');
+      if (d.tensorflow) console.log('✅ TensorFlow model loaded!');
+      else console.warn('⚠️ Running in demo mode — no model loaded.');
+    })
     .catch(() => console.warn('⚠️ Backend not reachable.'));
 });
 
