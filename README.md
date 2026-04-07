@@ -5,6 +5,8 @@ HAM10000 dataset to classify skin lesions into 7 categories.
 
 Built by **Ubika Chaudhary** and **Moksha** @ MMDU, Ambala.
 
+ =>  https://dermascan.up.railway.app/
+
 ---
 
 ## 📁 Folder Structure
